@@ -8,6 +8,14 @@ const articleCollectReq = require('../request/article/collect-req.js');
 // demo
 const demoReq = require('../request/demo/demo-req.js');
 const demoCollectReq = require('../request/demo/collect-req.js');
+// 权限
+const manageRight = require('../request/manage/manage-right-req.js');
+// 角色
+const manageRole = require('../request/manage/manage-role-req.js');
+// 角色权限授予
+const RightToRole = require('../request/manage/right-role-req.js');
+// 角色权限授予
+const roleToUser = require('../request/manage/role-user-req.js');
     
 var router = {
     userInfoReq,
@@ -16,7 +24,11 @@ var router = {
     leavingReq,
     demoReq,
     articleCollectReq,
-    demoCollectReq
+    demoCollectReq,
+    manageRight,
+    manageRole,
+    RightToRole,
+    roleToUser
 }
 
 module.exports = router;

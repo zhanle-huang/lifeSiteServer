@@ -5,13 +5,12 @@ const router = $common.express.Router();
  * 注册请求
  * */
 router.post('/register', async (req, res) => {
-    const phone = req.body.phone;
-    const password = req.body.password;
-    const name = req.body.name;
-    const verification = req.body.verification;
+    let param = ['phone', 'password', 'name', 'verification'];
+    param = $common.getQueryParam(req, 'query', param);
     const token = $common.strLen();
     const createTime = new Date();
     const updateTime = new Date();
+    let { phone, password, name, verification } = param;
     let vital = ['phone', 'password', 'name', 'verification'];
     if (!$common.vitalParam(param, vital)) {
         res.send($common.setErrorData('缺少必须参数'));
@@ -37,8 +36,9 @@ router.post('/register', async (req, res) => {
  * 登录请求
  * */
 router.post('/login', (req, res) => {
-    const phone = req.body.phone;
-    const password = req.body.password;
+    let param = ['phone', 'password'];
+    param = $common.getQueryParam(req, 'query', param);
+    let { phone, password } = param;
     let vital = ['phone', 'password'];
     if (!$common.vitalParam(param, vital)) {
         res.send($common.setErrorData('缺少必须参数'));
@@ -57,6 +57,31 @@ router.post('/login', (req, res) => {
         })
     }
     
+})
+
+/**
+ * 密码找回
+ * */
+router.post('/changePwd', (req, res) => {
+    const param = ['phone', 'verification', 'password', 'rePwd'];
+    param = $common.getQueryParam(req, 'body', param);
+    let { phone, verification, password, rePwd} = param;
+    let vital = ['pageNum', 'pageSize'];
+    if (!$common.vitalParam(param, vital)) {
+        res.send($common.setErrorData('缺少必须参数'));
+    } else {
+        let updateSql = 'update users set password=? where phone=?';
+        let updateArr = [password, phone];
+        $common.db_mysql.select(updateSql, updateArr, result => {
+            if (resArr) {
+                $common.resData.data = {}
+                $common.resData.msg = '修改密码成功';
+                res.send($common.resData);
+            } else {
+                res.send($common.setErrorData('修改密码失败，验证码错误'));
+            }
+        })
+    }
 })
 
 

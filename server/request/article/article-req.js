@@ -120,7 +120,6 @@ router.put('/', (req, res) => {
     } else {
         let sql = 'update articles set categoryId=?, title=?, updateTime=? where id=? and author=?';
         let arr = [categoryId, title, updateTime, id, author];
-        console.log(arr)
         $common.db_mysql.update(sql, arr, result => {
             if (result) {
                 $common.resData.data = {};

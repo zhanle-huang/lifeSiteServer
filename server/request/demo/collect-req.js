@@ -71,7 +71,6 @@ router.post('/', async (req, res) => {
 router.delete('/', (req, res) => {
     let param = ['demoCollectId', 'phone'];
     param = $common.getQueryParam(req, 'body', param);
-    console.log(param)
     let { demoCollectId, phone } = param;
     let vital = ['demoCollectId', 'phone'];
     if (!$common.vitalParam(param, vital)) {

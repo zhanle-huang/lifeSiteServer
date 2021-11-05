@@ -102,6 +102,15 @@ yun.use(`/${$common.projectName}/leaving`, routerReq.leavingReq)
 yun.use(`/${$common.projectName}/demo`, routerReq.demoReq)
 // demo收藏接口
 yun.use(`/${$common.projectName}/collect/demo`, routerReq.demoCollectReq)
+// 权限
+yun.use(`/${$common.projectName}/manage/right`, routerReq.manageRight)
+// 角色
+yun.use(`/${$common.projectName}/manage/role`, routerReq.manageRole)
+// 角色权限授予
+yun.use(`/${$common.projectName}/manage/rightToRole`, routerReq.RightToRole)
+// 用户角色授予
+yun.use(`/${$common.projectName}/manage/roleToUser`, routerReq.roleToUser)
+
 
 // 监听服务端口
 yunHttp.listen(port, hostname, function() {

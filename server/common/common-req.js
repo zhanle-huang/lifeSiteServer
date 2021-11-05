@@ -104,18 +104,24 @@ async function isExit(param, name, tableName) {
  * 处理查询结果
  * @param {Object} result 查询结果
  * @param {Array} attrList 属性数组
+ * @param {Array} reName 重命名数组
  * */
-function selectHandle(result, attrList) {
+function selectHandle(result, attrList, reName = []) {
     if (result && result.length > 0) {
         let resultArr = [];
         result.map(item => {
             let obj = {};
-            attrList.map(attr => {
-                obj[attr] = item[attr];
-            })
+            if (attrList.length === reName.length) {
+                attrList.map((attr, index) => {
+                    obj[reName[index]] = item[attr];
+                })
+            } else {
+                attrList.map(attr => {
+                    obj[attr] = item[attr];
+                })
+            }
             resultArr.push(obj);
         })
-        console.log(resultArr);
         return resultArr;
     } else {
         return [];
@@ -142,10 +148,8 @@ function getQueryParam(req, type, param) {
  * @param {Array} param 待校验字段数组
  * */
 function vitalParam(obj, param) {
-    console.log('obj', obj, param)
     for (var k in param) {
-        console.log(obj[param[k]] === undefined || obj[param[k]] === '', param[k])
-        if (obj[param[k]] === undefined || obj[param[k]] === '') {
+        if (obj[param[k]] === undefined) {
             return false;
         }
     }
