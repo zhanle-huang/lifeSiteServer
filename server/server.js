@@ -110,6 +110,8 @@ yun.use(`/${$common.projectName}/manage/role`, routerReq.manageRole)
 yun.use(`/${$common.projectName}/manage/rightToRole`, routerReq.RightToRole)
 // 用户角色授予
 yun.use(`/${$common.projectName}/manage/roleToUser`, routerReq.roleToUser)
+// 系统菜单
+yun.use(`/${$common.projectName}/manage/sysmenu`, routerReq.sysMenu)
 
 
 // 监听服务端口

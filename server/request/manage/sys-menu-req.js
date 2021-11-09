@@ -18,46 +18,12 @@ router.post('/addSysMenu', (req, res) => {
     let moduleName = '菜单';
     let isExitArr = ['path'];
     let exitTableName = 'sysmenu';
-    requestHandler.postHandler(req, res, param, vital, expand, insertSql, insertArr, moduleName, isExitArr, exitTableName, menuRight(name, ENName, path));
-    
-    
-    // const id = $common.strLen();
-    // const parentId = req.body.parentId;
-    // const name = req.body.name;
-    // const ENName = req.body.ENName;
-    // const layer = parseInt(req.body.layer);
-    // const path = req.body.path;
-    // const icon = req.body.icon;
-    // const isDisabled = req.body.isDisabled ? '1' : '0';
-    // const isSystem = req.body.isSystem ? '1' : '0';
-    // const createTime = new Date();
-    // const updateTime = new Date();
-    // let resDatas = JSON.parse(JSON.stringify(resData))
-    // let insertSql =
-    //     'insert into sysmenu(id, parentId, name, ENName, layer, path, icon, isDisabled, isSystem, createTime, updateTime) values(?,?,?,?,?,?,?,?,?,?,?)';
-    // let insertArr = [id, parentId, name, ENName, layer, path, icon, isDisabled, isSystem, createTime,
-    //     updateTime
-    // ];
-    // let isExitSql = 'select * from sysmenu where path=?';
-    // let isExitArr = [path];
-    // db_mysql.select(isExitSql, isExitArr, isExitRes => {
-    //     if (isExitRes && isExitRes.length > 0) {
-    //         errorData.msg = '该菜单路径重复';
-    //         res.send(errorData)
-    //     } else {
-    //         db_mysql.insert(insertSql, insertArr, results => {
-    //             if (results) {
-    //                 menuRight(name, ENName, path)
-    //                 resDatas.msg = '添加系统菜单成功';
-    //                 res.send(resDatas)
-    //             } else {
-    //                 errorData.msg = '添加系统菜单失败';
-    //                 errorData.code = 201;
-    //                 res.send(errorData)
-    //             }
-    //         })
-    //     }
-    // })
+    let name = req.body.name;
+    let ENName = req.body.ENName;
+    let path = req.body.path;
+    requestHandler.postHandler(req, res, param, vital, expand, insertSql, insertArr, moduleName, isExitArr, exitTableName, () => {
+        menuRight(name, ENName, path)
+    });
 })
 // 根据添加的菜单添加权限
 async function menuRight(name, ENName, menuPath) {
@@ -70,7 +36,7 @@ async function menuRight(name, ENName, menuPath) {
     const updateTime = new Date();
     let insertSql =
         'insert into rights(rightId, rightName, rightENName, rightTypeId, path, createTime, updateTime) values(?, ?, ?, ?, ?, ?, ?)'
-    let insertArr = [rightId, rightName, rightENName, rightType, path, createTime, updateTime];
+    let insertArr = [rightId, rightName, rightENName, rightTypeId, path, createTime, updateTime];
     $common.db_mysql.select(insertSql, insertArr, results => {
         if (results) {
             console.log('添加菜单权限成功')
@@ -102,16 +68,14 @@ async function modifyRight(rId, rName, rENName, rPath) {
     let resDatas = JSON.parse(JSON.stringify($common.resData))
     let updateSql = 'update rights set rightName=?, rightENName=?, path=?, updateTime=? where rightId=?';
     let updateArr = [rightName, rightENName, path, updateTime, rightId];
-    await $common.db_mysql.update(updateSql, updateArr, results => {
-        console.log('修改菜单权限成功')
-    })
+    return await $common.db_mysql.asyncUpdate(updateSql, updateArr)
 }
 /**
  * 根据权限获取用户菜单
  * */
 router.post('/getMenuByRight', async (req, res) => {
     const beUser = req.body.beUser;
-    let getRightSql = 'select * from userstorightview where isMenu=1 and beUser=?';
+    let getRightSql = 'select * from usertorightview where isMenu=1 and beUser=?';
     let getRightArr = [beUser];
     let resDatas = JSON.parse(JSON.stringify($common.resData));
     // 获取用户菜单的权限
@@ -266,8 +230,7 @@ router.get('/isExitMenu', (req, res) => {
     let resDatas = JSON.parse(JSON.stringify($common.resData))
     $common.db_mysql.select(isExitSql, isExitArr, isExitRes => {
         if (isExitRes && isExitRes.length > 0) {
-            errorData.msg = keyWord + '：该菜单路径重复';
-            res.send(errorData)
+            res.send($common.setErrorData(keyWord + '：该菜单路径重复'));
         } else {
             resDatas.msg = '可以使用该属性'
             resDatas.code = 200;
@@ -298,22 +261,22 @@ router.post('/modifySysMenu', async (req, res) => {
         updateTime, id
     ];
     $common.db_mysql.update(modifyMenuSql, modifyMenuArr, async modifyMenuRes => {
-        if (!!modifyMenuRes && modifyMenuRes.affectedRows === 1) {
+        console.log(modifyMenuRes)
+        if (modifyMenuRes) {
             let rightItem = await getRightId(prevPath.path)
-            modifyRight(rightItem.rightId, name, ENName, path)
+            let status = await modifyRight(rightItem.rightId, name, ENName, path)
+            console.log('status', status)
             resDatas.msg = '修改系统菜单成功';
             res.send(resDatas)
         } else {
-            errorData.msg = '修改系统菜单失败';
-            errorData.code = 201;
-            res.send(errorData)
+             res.send($common.setErrorData('修改系统菜单失败'));
         }
     })
 })
 // 根据菜单的路径和名称还有类型获取权限id
 async function getRightId(path) {
     const rightPath = path;
-    let getIdSql = 'select * from rightsview where isMenu=1 and path=?';
+    let getIdSql = 'select * from rightview where isMenu=1 and path=?';
     let getIdArr = [rightPath]
     let result = await $common.db_mysql.asyncSelect(getIdSql, getIdArr);
     if (result && result.length > 0) {
@@ -358,7 +321,6 @@ async function getMenuById(id) {
 }
 // 根据id删除菜单权限
 function delMenuRight(id) {
-    let resDatas = JSON.parse(JSON.stringify(resData))
     let delRightSql = 'delete from rights where rightId = ?';
     let delRightArr = [id];
     $common.db_mysql.del(delRightSql, delRightArr, result => {
@@ -384,50 +346,6 @@ router.get('/searchMenu', (req, res) => {
     let reName = ['id', 'parentId', 'name', 'ENName', 'path', 'icon', 'isDisabled', 'isSystem', 'isDelete', 'createTime', 'updateTime'];
     let moduleName = '菜单';
     requestHandler.getHandler(req, res, param, vital, totalSql, expand, getSql, getArr, selectAttr, reName, moduleName);
-    
-    // const keyWord = `%${req.query.keyWord}%`
-    // const pageNum = parseInt(req.query.pageNum) - 1 >= 0 ? parseInt(req.query.pageNum) - 1 : 0;
-    // const pageSize = parseInt(req.query.pageSize) > 0 ? parseInt(req.query.pageSize) : 10;
-    // let resDatas = JSON.parse(JSON.stringify(resData))
-    // let countSql = 'select count(*) as count from sysmenu where name like ? or path like ?';
-    // let countArr = [keyWord, keyWord]
-    // let getMenuSql = 'select * from sysmenu where name like ? or path like ? limit ?, ?';
-    // let getMenuArr = [keyWord, keyWord, pageNum * pageSize, pageSize]
-    // db_mysql.select(countSql, countArr, countRes => {
-    //     if (countRes && countRes.length > 0) {
-    //         resDatas.total = countRes[0].count
-    //         db_mysql.select(getMenuSql, getMenuArr, results => {
-    //             console.log(results)
-    //             if (results && results.length > 0) {
-    //                 resDatas.data = [];
-    //                 results.map(item => {
-    //                     let temp = {
-    //                         id: item.id,
-    //                         parentId: item.parentId,
-    //                         name: item.name,
-    //                         ENName: item.ENName,
-    //                         path: item.path,
-    //                         icon: item.icon,
-    //                         isDisabled: item.isDisabled,
-    //                         isSystem: item.isSystem,
-    //                         isDelete: item.isDelete
-    //                     }
-    //                     resDatas.data.push(temp)
-    //                 })
-    //                 resDatas.msg = '查询菜单成功'
-    //                 res.send(resDatas)
-    //             } else {
-    //                 errorData.msg = '查询菜单失败';
-    //                 errorData.code = 201;
-    //                 res.send(errorData)
-    //             }
-    //         })
-    //     } else {
-    //         resDatas.data = []
-    //         resDatas.msg = '暂无相关菜单数据';
-    //         res.send(resDatas)
-    //     }
-    // })
 })
 
 /**
@@ -442,14 +360,14 @@ router.get('/getNoRightMenu', async (req, res) => {
         return;
     }
     let resDatas = JSON.parse(JSON.stringify($common.resData))
+    resDatas.data.data = []
     menus.map(item => {
         if (rightResult[0].indexOf(item.path) === -1) {
-            resDatas.data.push({
+            resDatas.data.data.push({
                 id: item.id,
                 parentId: item.parentId,
                 name: item.name,
                 ENName: item.ENName,
-                layer: item.layer,
                 path: item.path,
                 icon: item.icon,
                 isDisabled: item.isDisabled,
@@ -463,7 +381,7 @@ router.get('/getNoRightMenu', async (req, res) => {
 })
 // 获取已经成为权限的菜单的路径
 async function getMenuIsRight() {
-    let getMenuRightSql = 'select * from rightsview where isMenu=1';
+    let getMenuRightSql = 'select * from rightview where isMenu=1';
     let getMenuRightArr = null
     let paths = []
     let names = []
@@ -490,7 +408,6 @@ async function getMenu() {
                 parentId: item.parentId,
                 name: item.name,
                 ENName: item.ENName,
-                layer: item.layer,
                 path: item.path,
                 icon: item.icon,
                 isDisabled: item.isDisabled,

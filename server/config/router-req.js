@@ -16,6 +16,8 @@ const manageRole = require('../request/manage/manage-role-req.js');
 const RightToRole = require('../request/manage/right-role-req.js');
 // 角色权限授予
 const roleToUser = require('../request/manage/role-user-req.js');
+// 系统菜单
+const sysMenu = require('../request/manage/sys-menu-req.js');
     
 var router = {
     userInfoReq,
@@ -28,7 +30,8 @@ var router = {
     manageRight,
     manageRole,
     RightToRole,
-    roleToUser
+    roleToUser,
+    sysMenu
 }
 
 module.exports = router;
