@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
         let total = await $common.getTotal('select count(*) as count from leavingview');
         $common.resData.data.total = total
         if (total > 0) {
-            let sql = 'select * from leavingview limit ?, ?';
+            let sql = 'select * from leavingview order by createTime desc limit ?, ?';
             let arr = [pageNum * pageSize, pageSize];
             $common.db_mysql.select(sql, arr, result => {
                 let selectAttr = ['id', 'phone', 'userName', 'userSrc', 'content', 'createTime'];

@@ -69,15 +69,15 @@ router.post('/', async (req, res) => {
 
 // 删除demo收藏
 router.delete('/', (req, res) => {
-    let param = ['demoCollectId', 'phone'];
+    let param = ['demoCollectId'];
     param = $common.getQueryParam(req, 'body', param);
-    let { demoCollectId, phone } = param;
-    let vital = ['demoCollectId', 'phone'];
+    let { demoCollectId } = param;
+    let vital = ['demoCollectId'];
     if (!$common.vitalParam(param, vital)) {
         res.send($common.setErrorData('缺少必须参数'));
     } else {
-        let sql = 'delete from democollect where id=? and phone=?';
-        let arr = [demoCollectId, phone];
+        let sql = 'delete from democollect where id=?';
+        let arr = [demoCollectId];
         $common.db_mysql.del(sql, arr, result => {
             if (result) {
                 $common.resData.data = {};

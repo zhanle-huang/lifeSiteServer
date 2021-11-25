@@ -19,6 +19,8 @@ const roleToUser = require('../request/manage/role-user-req.js');
 // 系统菜单
 const sysMenu = require('../request/manage/sys-menu-req.js');
     
+// 轮播图
+const carouselReq = require('../request/common/carousel-req.js');
 var router = {
     userInfoReq,
     articleReq,
@@ -31,7 +33,8 @@ var router = {
     manageRole,
     RightToRole,
     roleToUser,
-    sysMenu
+    sysMenu,
+    carouselReq
 }
 
 module.exports = router;

@@ -61,18 +61,18 @@ router.get('/:id', (req, res) => {
 
 // 添加文章
 router.post('/', (req, res) => {
-    let param = ['categoryId', 'title', 'author'];
+    let param = ['categoryId', 'title', 'author', 'content'];
     param = $common.getQueryParam(req, 'body', param);
-    let { categoryId, title, author } = param;
+    let { categoryId, title, author, content } = param;
     const id = $common.strLen();
     const createTime = new Date();
     const updateTime = new Date();
-    let vital = ['categoryId', 'title', 'author'];
+    let vital = ['categoryId', 'title', 'author', 'content'];
     if (!$common.vitalParam(param, vital)) {
         res.send($common.setErrorData('缺少必须参数'));
     } else {
-        let sql = 'insert into articles(id, categoryId, title, author, createTime, updateTime) values(?, ?, ?, ?, ?, ?)';
-        let arr = [id, categoryId, title, author, createTime, updateTime];
+        let sql = 'insert into articles(id, categoryId, content, title, author, createTime, updateTime) values(?, ?, ?, ?, ?, ?, ?)';
+        let arr = [id, categoryId, content, title, author, createTime, updateTime];
         $common.db_mysql.insert(sql, arr, result => {
             if (result) {
                 $common.resData.data = {};

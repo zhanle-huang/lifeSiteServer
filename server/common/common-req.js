@@ -149,7 +149,7 @@ function getQueryParam(req, type, param) {
  * */
 function vitalParam(obj, param) {
     for (var k in param) {
-        if (obj[param[k]] === undefined) {
+        if (obj[param[k]] === undefined || obj[param[k]] === '') {
             return false;
         }
     }

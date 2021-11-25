@@ -3,9 +3,9 @@ const router = $common.express.Router();
 
 // 获取demo列表请求
 router.get('/', async (req, res) => {
-    let param = ['pageNum', 'pageSize', 'demoName', 'author'];
+    let param = ['pageNum', 'pageSize', 'demoName', 'author', 'phone', 'categoryId'];
     param = $common.getQueryParam(req, 'query', param);
-    let { pageNum, pageSize, demoName, author } = param;
+    let { pageNum, pageSize, demoName, author, phone, categoryId } = param;
     pageNum = +pageNum;
     pageSize = +pageSize;
     pageNum = pageNum - 1 >= 0 ? pageNum - 1 : 0
@@ -16,21 +16,27 @@ router.get('/', async (req, res) => {
     } else {
         let total = 0;
         try {
-            total = await $common.getTotal('select count(*) as count from demo where title like ? or (title like ? and author=?)', [`%${demoName}%`, `%${demoName}%`, author]);
+            total = await $common.getTotal('select count(*) as count from demo where (title like ? or (title like ? and author=?)) and category=?', [`%${demoName}%`, `%${demoName}%`, author, categoryId]);
         } catch(e) {
             console.log(e)
         }
         console.log('total', total)
         $common.resData.data.total = total
         if (total > 0) {
-            let sql = 'select * from demo where title like ? or (title like ? and author=?) limit ?, ?';
-            let arr = [`%${demoName}%`, `%${demoName}%`, author, pageNum * pageSize, pageSize];
-            $common.db_mysql.select(sql, arr, result => {
+            let sql = 'select * from demo where (title like ? or (title like ? and author=?)) and category=? limit ?, ?';
+            let arr = [`%${demoName}%`, `%${demoName}%`, author, categoryId, pageNum * pageSize, pageSize];
+            $common.db_mysql.select(sql, arr, async result => {
                 let selectAttr = ['id', 'title', 'author', 'authorName', 'userSrc', 'path', 'downName', 'downLoadNum', 'readNum', 'likeNum', 'createTime', 'updateTime'];
                 let resArr = $common.selectHandle(result, selectAttr);
                 if (resArr.length > 0) {
                     $common.resData.data.list = resArr;
+                    for (let key in $common.resData.data.list) {
+                        let status = await $common.isExit([phone, $common.resData.data.list[key].id], ['phone', 'demoId'], 'democollect');
+                        $common.resData.data.list[key].like = status
+                        console.log('xx', status, $common.resData.data.list[key])
+                    }
                     $common.resData.msg = '获取demo列表成功';
+                    console.log('$common.resData', $common.resData)
                     res.send($common.resData);
                 } else {
                     res.send(setErrorData('获取demo列表失败'));

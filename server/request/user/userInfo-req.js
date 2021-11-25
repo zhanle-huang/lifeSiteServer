@@ -5,18 +5,18 @@ const router = $common.express.Router();
  * 注册请求
  * */
 router.post('/register', async (req, res) => {
-    let param = ['phone', 'password', 'name', 'verification'];
-    param = $common.getQueryParam(req, 'query', param);
+    let param = ['phone', 'password', 'name'];
+    param = $common.getQueryParam(req, 'body', param);
     const token = $common.strLen();
     const createTime = new Date();
     const updateTime = new Date();
-    let { phone, password, name, verification } = param;
-    let vital = ['phone', 'password', 'name', 'verification'];
+    let { phone, password, name } = param;
+    let vital = ['phone', 'password', 'name'];
     if (!$common.vitalParam(param, vital)) {
         res.send($common.setErrorData('缺少必须参数'));
     } else {
         if (await $common.isExit([phone], ['phone'], 'users')) {
-            res.send($common.setErrorData('该手机号已经存在'));
+            res.send($common.setErrorData('该手机号已经注册，请直接登录'));
         } else {
             let registerSql = 'insert into users(phone, password, name, token, createTime, updateTime) values(?, ?, ?, ?, ?, ?)';
             let registerArr = [phone, password, name, token, createTime, updateTime];
@@ -37,7 +37,7 @@ router.post('/register', async (req, res) => {
  * */
 router.post('/login', (req, res) => {
     let param = ['phone', 'password'];
-    param = $common.getQueryParam(req, 'query', param);
+    param = $common.getQueryParam(req, 'body', param);
     let { phone, password } = param;
     let vital = ['phone', 'password'];
     if (!$common.vitalParam(param, vital)) {
@@ -48,6 +48,8 @@ router.post('/login', (req, res) => {
         $common.db_mysql.select(loginSql, loginArr, result => {
             let resArr = $common.selectHandle(result, ['phone', 'password', 'token']);
             if (resArr.length > 0) {
+                $common.resData.data = {}
+                console.log('resArr[0]', resArr[0])
                 $common.resData.data.userInfo = resArr[0];
                 $common.resData.msg = '登录成功';
                 res.send($common.resData);
