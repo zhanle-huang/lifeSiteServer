@@ -90,12 +90,17 @@ yun.all("*", function(req, res, next) {
 // 路由中转
 // 用户接口
 yun.use(`/${$common.projectName}/user`, routerReq.userInfoReq)
+yun.use(`/${$common.projectName}/upload`, routerReq.uploadReq)
 // 文章接口
 yun.use(`/${$common.projectName}/article`, routerReq.articleReq)
 // 文章类型接口
 yun.use(`/${$common.projectName}/category`, routerReq.categoryReq)
 // 文章收藏接口
 yun.use(`/${$common.projectName}/collect/article`, routerReq.articleCollectReq)
+// 获取文章左侧
+yun.use(`/${$common.projectName}/articleLeft`, routerReq.articleLeftListReq)
+// 文章评论接口
+yun.use(`/${$common.projectName}/comment`, routerReq.articleCommentReq)
 // 留言
 yun.use(`/${$common.projectName}/leaving`, routerReq.leavingReq)
 // demo
@@ -114,7 +119,10 @@ yun.use(`/${$common.projectName}/manage/roleToUser`, routerReq.roleToUser)
 yun.use(`/${$common.projectName}/manage/sysmenu`, routerReq.sysMenu)
 // 轮播图
 yun.use(`/${$common.projectName}/common/carousel`, routerReq.carouselReq)
-
+// 基础组件
+yun.use(`/${$common.projectName}/component/basic`, routerReq.basicComponent)
+// 基础组件属性
+yun.use(`/${$common.projectName}/component/basic/attribute`, routerReq.basicComponentAttr)
 
 // 监听服务端口
 yunHttp.listen(port, hostname, function() {

@@ -48,9 +48,12 @@ d_mysql.select = function(sql, param, callback) { //更新成功返回true，否
 d_mysql.asyncSelect = function(sql, param) {
     return new Promise((resolve, reject) => {
         connection.query(sql, param, function(error, results, fields) {
+            console.log(error)
             if (error) {
                 reject(false);
+                return;
             }
+            console.log('results', results)
             // console.log('The solution is: ', results);
             // console.log('The solution is: ', results[0].userId);
             resolve(results);

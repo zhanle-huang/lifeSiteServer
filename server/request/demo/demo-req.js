@@ -3,6 +3,7 @@ const router = $common.express.Router();
 
 // 获取demo列表请求
 router.get('/', async (req, res) => {
+    $common.resData.data = {}
     let param = ['pageNum', 'pageSize', 'demoName', 'author', 'phone', 'categoryId'];
     param = $common.getQueryParam(req, 'query', param);
     let { pageNum, pageSize, demoName, author, phone, categoryId } = param;
@@ -72,18 +73,18 @@ router.get('/:id', (req, res) => {
 
 // 添加demo
 router.post('/', (req, res) => {
-    let param = ['title', 'author', 'path', 'downName'];
+    let param = ['title', 'author', 'path', 'downName', 'categoryId'];
     param = $common.getQueryParam(req, 'body', param);
-    let { title, author, path, downName } = param;
+    let { title, author, path, downName, categoryId } = param;
     const id = $common.strLen();
     const createTime = new Date();
     const updateTime = new Date();
-    let vital = ['title', 'author', 'path', 'downName'];
+    let vital = ['title', 'author', 'path', 'downName', 'categoryId'];
     if (!$common.vitalParam(param, vital)) {
         res.send($common.setErrorData('缺少必须参数或参数名不对'));
     } else {
-        let sql = 'insert into demo(id, title, author, path, downName, createTime, updateTime) values(?, ?, ?, ?, ?, ?, ?)';
-        let arr = [id, title, author, path, downName, createTime, updateTime];
+        let sql = 'insert into demo(id, title, author, category, path, downName, createTime, updateTime) values(?, ?, ?, ?, ?, ?, ?, ?)';
+        let arr = [id, title, author, categoryId, path, downName, createTime, updateTime];
         $common.db_mysql.insert(sql, arr, result => {
             if (result) {
                 $common.resData.data = {};

@@ -66,7 +66,6 @@ router.get('/', (req, res) => {
  * 修改权限
  * */
 router.put('/', (req, res) => {
-    const rightId = $common.strLen();
     const updateTime = new Date();
     let param = ['rightId', 'rightName', 'rightENName', 'rightTypeId', 'path', 'status'];
     let vital = ['rightId', 'rightName', 'rightENName', 'rightTypeId', 'path', 'status'];

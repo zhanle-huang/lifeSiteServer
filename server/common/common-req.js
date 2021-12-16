@@ -8,11 +8,11 @@ const projectName = 'lifeSite';
 // 引入crypto模块
 const os = require('os')
 const crypto = require('crypto');
-let host = 'https://127.0.0.1:3001/yun/'
+let host = `https://127.0.0.1:3001/${projectName}/`
 const noVitalParam = '缺少必须参数或参数名不对'
 const platform = os.platform();
 if(platform === 'linux') {
-    host = 'https://zhanlehr.com:3001/yun/'
+    host = `https://8.com:3001/yun/`
 }
 let cryptoObj = null;
 
@@ -81,19 +81,18 @@ function enCodePWD(data, password) {
  * @return {boolean} true 表示存在，false 表示不存在
  * */
 async function isExit(param, name, tableName) {
-    console.log('aa', param, name)
     let isExitSql = 'select * from ' + tableName +' where ';
     let params = []
     for (var k in name) {
         params.push(param[k]);
         if (k === '0') {
-            isExitSql += name[k] + '=?';
+            isExitSql += `'${name[k]}'=?`;
         } else {
             isExitSql += ` and ${name[k]}=?`;
         }
     }
     let data = await db_mysql.asyncSelect(isExitSql, param);
-    if (data.length > 0) {
+    if (data && data.length > 0) {
         return true
     } else {
         return false
@@ -149,6 +148,7 @@ function getQueryParam(req, type, param) {
  * */
 function vitalParam(obj, param) {
     for (var k in param) {
+        console.log(param[k], obj[param[k]])
         if (obj[param[k]] === undefined || obj[param[k]] === '') {
             return false;
         }

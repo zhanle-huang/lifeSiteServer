@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{
+			margin: 0;
+			padding: 0;
+		}	
+		.container{
+			width: 100%;
+		}
+		.container .box{
+			width: 800px;
+			height: 400px;
+			/*background: red;*/
+			margin: 20px auto;
+		}
+		.container .box .sliper{
+			width: 100%;
+			height: 40px;
+			/*background: blue;*/
+			position: relative;
+		}
+		.container .box .sliper #slip{
+			display: block;
+			width: 8px;
+			height: 10px;
+			background-color: red;
+			border-radius: 4px;
+			cursor: pointer;
+	
+
+			position: absolute;
+			top: 0;
+			left: -10px;
+			z-index: 998;
+		}
+		.container .box .sliper .line{
+			width: 100%;
+			height: 4px;
+			background: gray;
+			border-radius: 2px;
+			position: absolute;
+			top: 18px;
+		}
+		.container .box .sliper .lineUp{
+			width: 0;
+			height: 4px;
+			background: blue;
+			border-radius: 2px;
+			position: absolute;
+			top: 18px;
+		}
+		.container .box .show{
+			width: 100%;
+			height: 100px;
+			/*background: pink;*/
+			text-align: center;
+			line-height: 100px;
+
+			position: relative;
+			margin-top: 80px;
+		}
+		.container .box .show .shadow{
+			/*width: 100px;*/
+			height: 100px;
+			background: yellow;
+			position: absolute;
+			top: 0;
+			left: 0;
+			z-index: 999;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="container">
+	<div class="box">
+		<div class="sliper">
+			<span id="slip"></span>
+			<div class="line"></div>
+			<div class="lineUp"></div>
+		</div>
+		<div class="show"><span>你是最帅的</span>
+			<div class="shadow"></div>
+		</div>
+	</div>
+	</div>
+	<!-- <script src="move.js"></script> -->
+	<script>
+		var moveBtn = document.getElementById("slip");
+		var slip = document.getElementsByClassName("sliper")[0];
+		var shadow = document.getElementsByClassName("shadow")[0];
+		var shadowUp = document.getElementsByClassName("lineUp")[0];
+		
+		moveBtn.onmousedown = function(){
+			slip.onmousemove = move1;
+			slip.onmouseup = stop1;
+		}
+
+		function move1(event){
+			event = event || window.event;
+			event.target = event.target || event.srcElement;
+			event.mx = event.pageX || event.clientX + document.documentElement.clientScrollLeft;
+			event.my = event.pageY || event.clientY + document.documentElement.clientScrollTop;
+			var l = event.mx - slip.offsetLeft;
+			console.log(l);
+			if(l+10 <=810 && l>=0){
+				moveBtn.style.left = l - 10 + "px";
+				shadow.style.width = l + "px"; 
+				shadowUp.style.width = l +"px";
+			}
+			
+		}
+		function stop1(event){
+			event = event || window.event;
+			event.target = event.target || event.srcElement;
+			slip.onmousemove = slip.onmouseup = null;
+		}
+	</script>
+</body>
+</html>

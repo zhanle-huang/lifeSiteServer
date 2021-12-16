@@ -1,27 +1,33 @@
 const $common = require('./common-req.js');
+const { StringDecoder } = require('string_decoder');
+const decoder = new StringDecoder('utf8');
+
 /**
  * @param { Object } req 请求对象
  * @param { Object } res 响应对象
  * @param { Array } param 要传递的参数名称
  * @param { Array } vital 必传参数字段名
  * @param { String } totalSql 获取总数的sql
- * @param { Array } expand 额外的判断参数,不方便直接获取的
+ * @param { Object } expand 额外的判断参数,不方便直接获取的
  * @param { String } getSql 获取数据sql
  * @param { Array } getArr 查询参数
  * @param { Array } selectAttr 查询字段
  * @param { Array } reName 重命名字段
  * @param { String } moduleName 模块名
+ * @param { Boolean } checkBlob 是否检查blob
+ * @param { Array } blobArr blob字段
  * */
 
 
-async function getHandler(req, res, param, vital, totalSql, expand, getSql, getArr, selectAttr, reName, moduleName) {
+async function getHandler(req, res, param, vital, totalSql, expand, getSql, getArr, selectAttr, reName, moduleName, checkBlob = false, blobArr = []) {
+    $common.resData.data = {}
+    let resData = JSON.parse(JSON.stringify($common.resData))
     if (param.length >= 0) {
         param = $common.getQueryParam(req, 'query', param);
         param.pageNum = +param.pageNum;
         param.pageSize = (+param.pageSize) > 0 ? +param.pageSize : 10;
         param.pageNum = param.pageNum - 1 >= 0 ? param.pageNum - 1 : 0;
     }
-    console.log(param, vital)
     if (vital.length > 0 && !$common.vitalParam(param, vital)) {
         res.send($common.setErrorData('缺少必须参数'));
     } else {
@@ -35,25 +41,33 @@ async function getHandler(req, res, param, vital, totalSql, expand, getSql, getA
             }
         })
         let total = await $common.getTotal(totalSql, arr);
-        $common.resData.data.total = total
-        console.log(total)
+        resData.data.total = total
         if (total > 0) {
             let sql = getSql;
             arr = [...arr, param.pageNum, param.pageSize];
             $common.db_mysql.select(sql, arr, result => {
                 let resArr = $common.selectHandle(result, selectAttr, reName);
                 if (resArr.length > 0) {
-                    $common.resData.data.list = resArr;
-                    $common.resData.msg = `获取${moduleName}成功`;
-                    res.send($common.resData);
+                    if (checkBlob) {
+                        resArr.map(item => {
+                            blobArr.map(blob => {
+                                if (item[blob]) {
+                                    item[blob] = decoder.write(item[blob]);
+                                }                             
+                            })
+                        })
+                    }
+                    resData.data.list = resArr;
+                    resData.msg = `获取${moduleName}成功`;
+                    res.send(resData);
                 } else {
                     res.send($common.setErrorData(`获取${moduleName}失败`));
                 }
             })
         } else {
-            $common.resData.data.list = [];
-            $common.resData.msg = `获取${moduleName}成功`;
-            res.send($common.resData);
+            resData.data.list = [];
+            resData.msg = `获取${moduleName}成功`;
+            res.send(resData);
         }
     }
 }
@@ -84,6 +98,7 @@ async function postHandler(req, res, param, vital, expand, insertSql, insertArr,
             res.send($common.setErrorData(`该${moduleName}已存在`));
             return;
         }
+        console.log('222')
         let sql = insertSql;
         let arr = [];
         let keys = Object.keys(param);
@@ -158,7 +173,6 @@ function putHandler(req, res, param, vital, expand, updateSql, updateArr, module
     if (param.length >= 0) {
         param = $common.getQueryParam(req, 'body', param);
     }
-    console.log(param, vital)
     if (vital.length > 0 && !$common.vitalParam(param, vital)) {
         res.send($common.setErrorData('缺少必须参数'));
     } else {

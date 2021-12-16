@@ -8,6 +8,7 @@ router.post('/register', async (req, res) => {
     let param = ['phone', 'password', 'name'];
     param = $common.getQueryParam(req, 'body', param);
     const token = $common.strLen();
+    const src = 'http://127.0.0.1:3000/lifeSite/public/images/user-head.png'
     const createTime = new Date();
     const updateTime = new Date();
     let { phone, password, name } = param;
@@ -18,8 +19,8 @@ router.post('/register', async (req, res) => {
         if (await $common.isExit([phone], ['phone'], 'users')) {
             res.send($common.setErrorData('该手机号已经注册，请直接登录'));
         } else {
-            let registerSql = 'insert into users(phone, password, name, token, createTime, updateTime) values(?, ?, ?, ?, ?, ?)';
-            let registerArr = [phone, password, name, token, createTime, updateTime];
+            let registerSql = 'insert into users(phone, password, name, token, src, createTime, updateTime) values(?, ?, ?, ?, ?, ?, ?)';
+            let registerArr = [phone, password, name, token, src, createTime, updateTime];
             $common.db_mysql.insert(registerSql, registerArr, (result) => {
                 if (result) {
                     $common.resData.data = {};

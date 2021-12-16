@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<!-- 插件 -->
+	<!-- <article>
+		<h1>使用插件</h1>
+		<object>
+			<param name="allowFullScreen" value="true">
+			<embed src="#" width="600" height="395"></embed>
+		</object>
+	</article> -->
+	<!-- article嵌套 -->
+	<article>
+		<header>
+			<h1>Twitter直播平台Periscope退出360度全景直播</h1>
+			<time pubdate="pubdate">2016年12月29日 18：12</time>
+		</header>
+		<p>
+			新兰科技讯 北京时间12月29日晚间消息，Twiteer今日在其直播平台Periscope上推出了360度视频直播服务。Twitter CEO杰克-多西
+		</p>
+		<footer>
+			<p>http://www.sina.com.cn</p>
+		</footer>
+		<section>
+			<h2>评论</h2>
+			<article>
+				<header>
+					<h3>天使之城</h3>
+					<p>
+						<time pubdate="2016-12-29 19:40-08:00">一小时前</time>
+					</p>
+				</header>
+				<p>ok</p>
+			</article>
+			<article>
+				<header>
+					<h3>西门吹雪</h3>
+					<p>
+						<time pubdate="2016-12-29 19:40-08:00">一小时前</time>
+					</p>
+				</header>
+				<p>well</p>
+			</article>
+		</section>
+	</article>
+</body>
+</html>
